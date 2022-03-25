@@ -69,7 +69,7 @@ class KSC(object):
                 if months is None:
                     months = [-i for i in range(len(developer_time_series) - 1, -1, -1)]
 
-                developer_time_series = [int(i) for i in developer_time_series]
+                developer_time_series = [0.1 if value == '0' else int(value) for value in developer_time_series]
 
                 plt.plot(months, developer_time_series, color='black')
 
@@ -128,7 +128,7 @@ if __name__ == '__main__':
     for developer in developers_activities:
         developer_name = developer['developer']
         developer_time_series = [developer[column] for column in developers_activities.fieldnames if column not in secondary_columns]
-        developer_time_series = [int(value) for value in developer_time_series]
+        developer_time_series = [0.1 if value == '0' else int(value) for value in developer_time_series]
         developers.append(developer_name)
         time_series.append(developer_time_series)
 

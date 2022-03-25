@@ -123,7 +123,7 @@ if __name__ == '__main__':
     developers = []
     time_series = []
 
-    secondary_columns = ['project_name', 'project_name', 'elite']
+    secondary_columns = ['project_name', 'developer', 'elite']
 
     for developer in developers_activities:
         developer_name = developer['developer']

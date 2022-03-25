@@ -117,7 +117,7 @@ class KSC(object):
             figure.savefig(filename, bbox_inches='tight', format='eps', dpi=1000)
 
 if __name__ == '__main__':
-    developers_activities_file = open('developers_activities_per_project.csv' , 'r')
+    developers_activities_file = open('developer_activities_per_project.csv' , 'r')
     developers_activities = DictReader(developers_activities_file)
 
     developers = []

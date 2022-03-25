@@ -46,7 +46,7 @@ class KSC(object):
         plt.title(r'$\beta$cv for 2 $\leq$ k $\leq$ 15')
         plt.xticks(fontsize=16)
         plt.yticks(fontsize=16)
-        figure.savefig('images/beta_cv.eps', bbox_inches='tight', format='eps', dpi=1000)
+        figure.savefig('images/beta_cv.png', bbox_inches='tight', format='png', dpi=1000)
 
     def get_clusters(self, number_of_clusters):
         self.centroids, self.assign, self.best_shift, self.cent_dists = ksc.ksc(self.time_series, number_of_clusters)
@@ -73,19 +73,19 @@ class KSC(object):
 
                 plt.plot(months, developer_time_series, color='black')
 
-            plt.ylim([0, 475])
-            plt.xlim([-75, 3])
+            # plt.ylim([0, 500])
+            # plt.xlim([-75, 3])
             plt.xlabel('Month', fontsize=24)
             plt.ylabel('# Events', fontsize=24)
             plt.xticks(fontsize=22)
             plt.yticks(fontsize=22)
 
-            filename = 'images/cluster_' + str(cluster) + '.eps'
+            filename = 'images/cluster_' + str(cluster) + '.png'
 
             if os.path.isfile(filename):
                 os.remove(filename)
 
-            figure.savefig(filename, bbox_inches='tight', format='eps', dpi=1000)
+            figure.savefig(filename, bbox_inches='tight', format='png', dpi=1000)
 
     def plot_centroids(self):
         months = None
@@ -109,12 +109,12 @@ class KSC(object):
             plt.xticks(fontsize=22)
             plt.yticks(fontsize=22)
             
-            filename = 'images/centroid_' + str(cluster) + '.eps'
+            filename = 'images/centroid_' + str(cluster) + '.png'
 
             if os.path.isfile(filename):
                 os.remove(filename)
 
-            figure.savefig(filename, bbox_inches='tight', format='eps', dpi=1000)
+            figure.savefig(filename, bbox_inches='tight', format='png', dpi=1000)
 
 if __name__ == '__main__':
     developers_activities_file = open('developer_activities_per_project.csv' , 'r')
@@ -133,6 +133,6 @@ if __name__ == '__main__':
         time_series.append(developer_time_series)
 
     k_spectral = KSC(developers, time_series)
-    k_spectral.plot_beta_cv()
+    # k_spectral.plot_beta_cv()
     k_spectral.plot_clusters(3)
     k_spectral.plot_centroids()

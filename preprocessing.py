@@ -1,3 +1,8 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+__author__ = 'CMSC 635; Group: The Thinker'
+
 import os
 import csv
 import json
@@ -71,7 +76,18 @@ def get_developers_activities_per_project(projects_name, projects_folder, month_
     return developers_activities
 
 def export_developers_activities_as_csv(activities_per_project, month_range):
-    fieldnames = ['project_name', 'developer'] + month_range
+    """Exports the developers activities as a CSV file. It also creates a column
+    in the CSV that defines if the user is an elite developer or not, based on the
+    heuristic proposed in [1]. 
+
+    [1] Wang, Zhendong, et al. "Unveiling elite developers activities in open source projects." 
+    ACM Transactions on Software Engineering and Methodology (TOSEM) 29.3 (2020): 1-35.
+
+    Args:
+        activities_per_project (dictionary): Contains the output of get_developers_activities_per_project()
+        month_range (list): List of strings representing a time series range
+    """
+    fieldnames = ['project_name', 'developer'] + month_range + ['elite']
 
     with open('developer_activities_per_project.csv', 'w') as output_file:
         writer = csv.DictWriter(output_file, fieldnames, lineterminator = '\n')
@@ -80,23 +96,41 @@ def export_developers_activities_as_csv(activities_per_project, month_range):
         for project in activities_per_project:
             for developer in activities_per_project[project]:
                 row = {'project_name': project, 'developer': developer}
+                elite_status = False
+                inactive_months = 0
 
                 for month in activities_per_project[project][developer]:
                     row[month] = activities_per_project[project][developer][month]
-                
+
+                    if row[month] > 0:
+                        elite_status = True
+                        inactive_months = 0
+                    else:
+                        inactive_months += 1
+
+                        if inactive_months >= 3:
+                            elite_status = False
+
+                row['elite'] = str(elite_status)
+
                 writer.writerow(row)
 
-# In order to make KSC work, each instance must have the same range of months. 
-# For this reason, we start each developer with a same dictionary of contributions per month,
-# ranging from January 2015 to December 2018.
-years = ['2015', '2016', '2017', '2018']
-months = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12']
-month_range = []
+if __name__ == '__main__':
+    # In order to make KSC work, each instance must have the same range of months. 
+    # For this reason, we start each developer with a same dictionary of contributions per month,
+    # ranging from January 2015 to December 2018.
+    years = ['2015', '2016', '2017', '2018']
+    months = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12']
+    month_range = []
 
-for year in years:
-    for month in months:
-        month_range.append(year + month)
+    for year in years:
+        for month in months:
+            # The given dataset goes up to the 10th month of 2018
+            if int(year) == 2018 and int(month) > 10:
+                continue # Skips the 11th and 12th month of 2018
+            else:
+                month_range.append(year + month)
 
-names, folders = get_projects()
-activities_per_project = get_developers_activities_per_project(names, folders, month_range)
-export_developers_activities_as_csv(activities_per_project, month_range)
+    names, folders = get_projects()
+    activities_per_project = get_developers_activities_per_project(names, folders, month_range)
+    export_developers_activities_as_csv(activities_per_project, month_range)

@@ -132,7 +132,7 @@ if __name__ == '__main__':
         developers.append(developer_name)
         time_series.append(developer_time_series)
 
-    k_spectral = KSC(developers, time_series, 'images/')
+    k_spectral = KSC(developers, time_series)
     k_spectral.plot_beta_cv()
     k_spectral.plot_clusters(3)
     k_spectral.plot_centroids()

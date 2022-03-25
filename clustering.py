@@ -69,13 +69,13 @@ class KSC(object):
                 if months is None:
                     months = [-i for i in range(len(developer_time_series) - 1, -1, -1)]
 
-                developer_time_series = [0.1 if value == '0' else int(value) for value in developer_time_series]
+                developer_time_series = [0.0001 if value == '0' else int(value) for value in developer_time_series]
 
                 plt.plot(months, developer_time_series, color='black')
 
             plt.ylim([0, 1500])
-            plt.xlim([-46, 3])
-            plt.xlabel('Month', fontsize=24)
+            plt.xlim([-46, 1])
+            plt.xlabel('Months', fontsize=24)
             plt.ylabel('# Events', fontsize=24)
             plt.xticks(fontsize=22)
             plt.yticks(fontsize=22)
@@ -103,8 +103,8 @@ class KSC(object):
             figure = plt.figure()
             plt.plot(months, centroid, color='black')
             plt.ylim([0, 1.0])
-            plt.xlim([-46, 3])
-            plt.xlabel('Month', fontsize=24)
+            plt.xlim([-46, 1])
+            plt.xlabel('Months', fontsize=24)
             plt.ylabel('Average', fontsize=24)
             plt.xticks(fontsize=22)
             plt.yticks(fontsize=22)
@@ -128,7 +128,7 @@ if __name__ == '__main__':
     for developer in developers_activities:
         developer_name = developer['developer']
         developer_time_series = [developer[column] for column in developers_activities.fieldnames if column not in secondary_columns]
-        developer_time_series = [0.1 if value == '0' else int(value) for value in developer_time_series]
+        developer_time_series = [0.0001 if value == '0' else int(value) for value in developer_time_series]
         developers.append(developer_name)
         time_series.append(developer_time_series)
 

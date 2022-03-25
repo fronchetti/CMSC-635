@@ -73,8 +73,8 @@ class KSC(object):
 
                 plt.plot(months, developer_time_series, color='black')
 
-            # plt.ylim([0, 500])
-            # plt.xlim([-75, 3])
+            plt.ylim([0, 1500])
+            plt.xlim([-46, 3])
             plt.xlabel('Month', fontsize=24)
             plt.ylabel('# Events', fontsize=24)
             plt.xticks(fontsize=22)
@@ -102,8 +102,8 @@ class KSC(object):
 
             figure = plt.figure()
             plt.plot(months, centroid, color='black')
-            # plt.ylim([0, 0.5])
-            # plt.xlim([-75, 3])
+            plt.ylim([0, 1.0])
+            plt.xlim([-46, 3])
             plt.xlabel('Month', fontsize=24)
             plt.ylabel('Average', fontsize=24)
             plt.xticks(fontsize=22)

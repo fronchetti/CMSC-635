@@ -1,15 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-__author__ =  'Felipe Fronchetti'
-__contact__ = 'fronchetti@usp.br'
+__author__ = 'CMSC 635; Group: The Thinker'
 
 import os
 from pyksc import ksc
 from pyksc import metrics
 import numpy
-from collections import Counter
-from csv import reader, DictReader, DictWriter
+from csv import DictReader
 import matplotlib.pyplot as plt
 
 class KSC(object):

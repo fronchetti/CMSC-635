@@ -1,6 +1,6 @@
 import os
+import csv
 import json
-from copy import deepcopy
 
 def get_projects(folder = 'projects'):
     """ Get projects names and subfolders inside a specific root folder.
@@ -71,11 +71,20 @@ def get_developers_activities_per_project(projects_name, projects_folder, month_
     return developers_activities
 
 def export_developers_activities_as_csv(activities_per_project, month_range):
-    headers = ['project_name', 'developer'] + month_range
+    fieldnames = ['project_name', 'developer'] + month_range
 
-    # for project in activities_per_project:
-    #    for developer in project:
+    with open('developer_activities_per_project.csv', 'w') as output_file:
+        writer = csv.DictWriter(output_file, fieldnames, lineterminator = '\n')
+        writer.writeheader()
 
+        for project in activities_per_project:
+            for developer in activities_per_project[project]:
+                row = {'project_name': project, 'developer': developer}
+
+                for month in activities_per_project[project][developer]:
+                    row[month] = activities_per_project[project][developer][month]
+                
+                writer.writerow(row)
 
 # In order to make KSC work, each instance must have the same range of months. 
 # For this reason, we start each developer with a same dictionary of contributions per month,
@@ -90,5 +99,4 @@ for year in years:
 
 names, folders = get_projects()
 activities_per_project = get_developers_activities_per_project(names, folders, month_range)
-print(activities_per_project)
 export_developers_activities_as_csv(activities_per_project, month_range)

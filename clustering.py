@@ -56,7 +56,7 @@ class KSC(object):
                 if cluster in self.time_series_by_cluster.keys():
                     self.time_series_by_cluster[cluster].append([developer, series])
                 else:
-                    self.time_series_by_cluster[cluster] = [developer, series]
+                    self.time_series_by_cluster[cluster] = [[developer, series]]
 
     def plot_clusters(self, k):
         self.get_clusters(k)
@@ -64,6 +64,8 @@ class KSC(object):
 
         for cluster in self.time_series_by_cluster.keys():
             figure = plt.figure()
+            elite = 0
+            nonelite = 0
 
             for developer in self.time_series_by_cluster[cluster]:
                 if months is None:
@@ -71,17 +73,22 @@ class KSC(object):
 
                 developer_time_series = [0.0001 if value == '0' else int(value) for value in developer[1]]
 
-                if (developer[0]['elite'] == True):
+                if (developer[0][2] == 'TRUE'):
+                    elite += 1
                     plt.plot(months, developer_time_series, color='green')
                 else:
+                    nonelite += 1
                     plt.plot(months, developer_time_series, color='red')
+
+            print('Cluster: ' + str(cluster))
+            print('Elite: ' + str(elite) + ' Nonelite: ' + str(nonelite) + '\n')
 
             plt.ylim([0, 1500])
             plt.xlim([-46, 1])
-            plt.xlabel('Months', fontsize = 24)
-            plt.ylabel('# Events', fontsize = 24)
-            plt.xticks(fontsize = 22)
-            plt.yticks(fontsize = 22)
+            plt.xlabel('Months', fontsize = 16, fontweight = 'bold')
+            plt.ylabel('# Events', fontsize = 16, fontweight = 'bold')
+            plt.xticks(fontsize = 14)
+            plt.yticks(fontsize = 14)
 
             filename = 'images/cluster_' + str(cluster) + '.png'
 
@@ -107,10 +114,10 @@ class KSC(object):
             plt.plot(months, centroid, color='black')
             plt.ylim([0, 1.0])
             plt.xlim([-46, 1])
-            plt.xlabel('Months', fontsize=24)
-            plt.ylabel('Average', fontsize=24)
-            plt.xticks(fontsize=22)
-            plt.yticks(fontsize=22)
+            plt.xlabel('Months', fontsize=16)
+            plt.ylabel('Average', fontsize=16)
+            plt.xticks(fontsize=14)
+            plt.yticks(fontsize=14)
             
             filename = 'images/centroid_' + str(cluster) + '.png'
 
@@ -129,13 +136,13 @@ if __name__ == '__main__':
     info_columns = ['developer', 'project', 'elite']
 
     for developer in developers_activities:
-        developer = [developer[information] for information in info_columns]
+        developer_info = [developer[information] for information in info_columns]
         developer_time_series = [developer[column] for column in developers_activities.fieldnames if column not in info_columns]
         developer_time_series = [0.0001 if value == '0' else int(value) for value in developer_time_series]
-        developers.append(developer)
+        developers.append(developer_info)
         time_series.append(developer_time_series)
 
     k_spectral = KSC(developers, time_series)
     # k_spectral.plot_beta_cv()
     k_spectral.plot_clusters(3)
-    # k_spectral.plot_centroids()
+    k_spectral.plot_centroids()

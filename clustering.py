@@ -16,7 +16,7 @@ class KSC(object):
 
         self.developers = developers
         self.time_series = numpy.array(time_series)
-        self.clusters_by_time_series = {}
+        self.time_series_by_cluster = {}
         self.centroids = None
         self.assign = None
         self.best_shift = None
@@ -52,33 +52,36 @@ class KSC(object):
         self.centroids, self.assign, self.best_shift, self.cent_dists = ksc.ksc(self.time_series, number_of_clusters)
 
         if self.assign is not None:
-            for series, cluster in zip(self.time_series , self.assign):
-                if cluster in self.clusters_by_time_series.keys():
-                    self.clusters_by_time_series[cluster].append(series)
+            for developer, series, cluster in zip(self.developers, self.time_series , self.assign):
+                if cluster in self.time_series_by_cluster.keys():
+                    self.time_series_by_cluster[cluster].append([developer, series])
                 else:
-                    self.clusters_by_time_series[cluster] = [series]
+                    self.time_series_by_cluster[cluster] = [developer, series]
 
     def plot_clusters(self, k):
         self.get_clusters(k)
         months = None 
 
-        for cluster in self.clusters_by_time_series.keys():
+        for cluster in self.time_series_by_cluster.keys():
             figure = plt.figure()
 
-            for developer_time_series in self.clusters_by_time_series[cluster]:
+            for developer in self.time_series_by_cluster[cluster]:
                 if months is None:
-                    months = [-i for i in range(len(developer_time_series) - 1, -1, -1)]
+                    months = [-i for i in range(len(developer[1]) - 1, -1, -1)]
 
-                developer_time_series = [0.0001 if value == '0' else int(value) for value in developer_time_series]
+                developer_time_series = [0.0001 if value == '0' else int(value) for value in developer[1]]
 
-                plt.plot(months, developer_time_series, color='black')
+                if (developer[0]['elite'] == True):
+                    plt.plot(months, developer_time_series, color='green')
+                else:
+                    plt.plot(months, developer_time_series, color='red')
 
             plt.ylim([0, 1500])
             plt.xlim([-46, 1])
-            plt.xlabel('Months', fontsize=24)
-            plt.ylabel('# Events', fontsize=24)
-            plt.xticks(fontsize=22)
-            plt.yticks(fontsize=22)
+            plt.xlabel('Months', fontsize = 24)
+            plt.ylabel('# Events', fontsize = 24)
+            plt.xticks(fontsize = 22)
+            plt.yticks(fontsize = 22)
 
             filename = 'images/cluster_' + str(cluster) + '.png'
 
@@ -123,16 +126,16 @@ if __name__ == '__main__':
     developers = []
     time_series = []
 
-    secondary_columns = ['project', 'developer', 'elite']
+    info_columns = ['developer', 'project', 'elite']
 
     for developer in developers_activities:
-        developer_name = developer['developer']
-        developer_time_series = [developer[column] for column in developers_activities.fieldnames if column not in secondary_columns]
+        developer = [developer[information] for information in info_columns]
+        developer_time_series = [developer[column] for column in developers_activities.fieldnames if column not in info_columns]
         developer_time_series = [0.0001 if value == '0' else int(value) for value in developer_time_series]
-        developers.append(developer_name)
+        developers.append(developer)
         time_series.append(developer_time_series)
 
     k_spectral = KSC(developers, time_series)
     # k_spectral.plot_beta_cv()
     k_spectral.plot_clusters(3)
-    k_spectral.plot_centroids()
+    # k_spectral.plot_centroids()

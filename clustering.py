@@ -66,22 +66,51 @@ class KSC(object):
             figure = plt.figure()
             elite = 0
             nonelite = 0
+            elite_avg = 0
+            nonelite_avg = 0
+            max_elite = [None, 0]
+            min_elite = [None, 99999]
+            max_nonelite = [None, 0]
+            min_nonelite = [None, 99999]
 
             for developer in self.time_series_by_cluster[cluster]:
                 if months is None:
                     months = [-i for i in range(len(developer[1]) - 1, -1, -1)]
 
                 developer_time_series = [0.0001 if value == '0' else int(value) for value in developer[1]]
+                total_events_by_developer = sum(developer_time_series)
 
                 if (developer[0][2] == 'TRUE'):
+                    elite_avg += total_events_by_developer
+
+                    if total_events_by_developer >= max_elite[1]:
+                        max_elite = [developer[0][0], total_events_by_developer]
+
+                    if total_events_by_developer <= min_elite[1]:
+                        min_elite = [developer[0][0], total_events_by_developer]
+
                     elite += 1
                     plt.plot(months, developer_time_series, color='green')
                 else:
+                    nonelite_avg += total_events_by_developer
+
+                    if total_events_by_developer >= max_nonelite[1]:
+                        max_nonelite = [developer[0][0], total_events_by_developer]
+
+                    if total_events_by_developer <= min_nonelite[1]:
+                        min_nonelite = [developer[0][0], total_events_by_developer]
+
                     nonelite += 1
                     plt.plot(months, developer_time_series, color='red')
 
             print('Cluster: ' + str(cluster))
+            elite_avg = elite_avg / elite
+            nonelite_avg = nonelite_avg / nonelite
+            print('Average: Elite:' + str(elite_avg) + ' Nonelite: ' + str(nonelite_avg))
             print('Elite: ' + str(elite) + ' Nonelite: ' + str(nonelite) + '\n')
+            print('Elite Max:' + str(max_elite) + ' Min: ' + str(min_elite))
+            print('Non elite Max: ' + str(max_nonelite) + ' Min: ' + str(min_nonelite))
+            print('\n\n\n')
 
             plt.ylim([0, 1500])
             plt.xlim([-46, 1])
@@ -134,13 +163,15 @@ if __name__ == '__main__':
     time_series = []
 
     info_columns = ['developer', 'project', 'elite']
+    bots = ['tensorflow-copybara'] # Ignore bots
 
     for developer in developers_activities:
-        developer_info = [developer[information] for information in info_columns]
-        developer_time_series = [developer[column] for column in developers_activities.fieldnames if column not in info_columns]
-        developer_time_series = [0.0001 if value == '0' else int(value) for value in developer_time_series]
-        developers.append(developer_info)
-        time_series.append(developer_time_series)
+        if developer['developer'] not in bots:
+            developer_info = [developer[information] for information in info_columns]
+            developer_time_series = [developer[column] for column in developers_activities.fieldnames if column not in info_columns]
+            developer_time_series = [0.0001 if value == '0' else int(value) for value in developer_time_series]
+            developers.append(developer_info)
+            time_series.append(developer_time_series)
 
     k_spectral = KSC(developers, time_series)
     # k_spectral.plot_beta_cv()
